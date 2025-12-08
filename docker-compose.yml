@@ -1,0 +1,45 @@
+version: '3.8' # Versão da especificação do Docker Compose
+
+services:
+  # 1. Serviço do Servidor Express
+  app:
+    container_name: Epm_Server
+    build: .             # Constrói a imagem Docker a partir do Dockerfile na pasta atual
+    restart: always      # Tenta reiniciar se falhar
+    ports:
+      - "3000:3000"      # Mapeia a porta 3000 do host para a porta 3000 do container
+    environment:
+      # Variáveis de ambiente para o Express se conectar ao MySQL
+      DB_HOST: db        # O nome do serviço 'db' resolve para o IP do container MySQL
+      DB_USER: Khemer
+      DB_PASSWORD: Khemer0#
+      DB_NAME: epm_db
+      DB_PORT: 3306
+      NODE_ENV: development
+    volumes:
+      - .:/usr/src/app   # Monta o diretório atual no container para desenvolvimento (hot-reload)
+    depends_on:
+      - db              # Garante que o serviço 'db' comece antes de 'app'
+
+  # 2. Serviço do Banco de Dados MySQL
+  db:
+    container_name: mysql_db
+    image: mysql:8.0    # Usa uma imagem oficial do MySQL
+    restart: always
+    environment:
+      # Configurações de acesso do MySQL
+      MYSQL_ROOT_PASSWORD: Khemer_admin # Senha do usuário root (geralmente não usada pelo app)
+      MYSQL_DATABASE: epm_db          # Nome do banco de dados a ser criado
+      MYSQL_USER: Khemer
+      MYSQL_PASSWORD: Khemer0#
+    ports:
+      # Expõe a porta do banco de dados (OPCIONAL: apenas para acesso externo como ferramentas como DBeaver/MySQL Workbench)
+      - "3306:3306"
+    volumes:
+      # Mapeia um volume para persistir os dados do MySQL no seu host (MUITO IMPORTANTE!)
+      - mysql_data:/var/lib/mysql
+
+# Volumes definidos (usados para persistência de dados)
+volumes:
+  mysql_data:
+    driver: local
