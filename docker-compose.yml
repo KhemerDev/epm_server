@@ -1,45 +1,52 @@
-version: '3.8' # Versão da especificação do Docker Compose
 
 services:
   # 1. Serviço do Servidor Express
   app:
     container_name: Epm_Server
-    build: .             # Constrói a imagem Docker a partir do Dockerfile na pasta atual
-    restart: always      # Tenta reiniciar se falhar
+    build: .
+    restart: always
     ports:
-      - "3000:3000"      # Mapeia a porta 3000 do host para a porta 3000 do container
+      - "3000:3000"
     environment:
-      # Variáveis de ambiente para o Express se conectar ao MySQL
-      DB_HOST: db        # O nome do serviço 'db' resolve para o IP do container MySQL
+      DB_HOST: db        # HOST: O nome do serviço 'db' (Correto!)
       DB_USER: Khemer
       DB_PASSWORD: Khemer0#
       DB_NAME: epm_db
       DB_PORT: 3306
       NODE_ENV: development
     volumes:
-      - .:/usr/src/app   # Monta o diretório atual no container para desenvolvimento (hot-reload)
+      - .:/usr/src/app
+      
+    # CORREÇÃO 2: Espera o MySQL ficar HEALTHY
     depends_on:
-      - db              # Garante que o serviço 'db' comece antes de 'app'
+      db:
+        condition: service_healthy
+        
 
   # 2. Serviço do Banco de Dados MySQL
   db:
     container_name: mysql_db
-    image: mysql:8.0    # Usa uma imagem oficial do MySQL
+    image: mysql:8.0
     restart: always
     environment:
-      # Configurações de acesso do MySQL
-      MYSQL_ROOT_PASSWORD: Khemer_admin # Senha do usuário root (geralmente não usada pelo app)
-      MYSQL_DATABASE: epm_db          # Nome do banco de dados a ser criado
+      MYSQL_ROOT_PASSWORD: Khemer_admin 
+      MYSQL_DATABASE: epm_db
       MYSQL_USER: Khemer
       MYSQL_PASSWORD: Khemer0#
     ports:
-      # Expõe a porta do banco de dados (OPCIONAL: apenas para acesso externo como ferramentas como DBeaver/MySQL Workbench)
-      - "3306:3306"
+      - "3307:3306"
     volumes:
-      # Mapeia um volume para persistir os dados do MySQL no seu host (MUITO IMPORTANTE!)
       - mysql_data:/var/lib/mysql
 
-# Volumes definidos (usados para persistência de dados)
+    healthcheck: # <-- SEÇÃO CORRIGIDA PARA MYSQL
+      # CORREÇÃO 1: Comando MySQL para checar o status
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 5s
+      retries: 10 # Aumentado para garantir a inicialização completa
+      start_period: 20s # Dê um período inicial para o MySQL começar a responder
+
+# Volumes definidos
 volumes:
   mysql_data:
     driver: local
