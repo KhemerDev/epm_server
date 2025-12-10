@@ -1,17 +1,21 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var cors= require('cors');
+import createError from 'http-errors';
+import express from 'express';
+import path from 'path';
+import cookieParser from 'cookie-parser';
+import logger from 'morgan';
+import cors from 'cors';
+import indexRouter from './routes/index.js';
+import usersRouter from './routes/users.js';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
 
 
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-var app = express();
+const app = express();
 
 
 app.use(logger('dev'));
@@ -39,7 +43,10 @@ app.use(function(err, req, res, next) {
 
     // render the error page
     res.status(err.status || 500);
-    res.send('error');
+    res.json({
+      message: err.message,
+      error: res.locals.error
+    })  ;
 });
 
-module.exports = app;
+export default app;

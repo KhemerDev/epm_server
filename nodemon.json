@@ -1,6 +1,6 @@
 
 {
-  "watch": [ "mildware", "routes", "app.js", "controller", "models"],
+  "watch": [ "mildware", "routes", "app.js", "controller", "model"],
   "ignore": ["node_modules", ".git", "docker-compose.yml"],
   "exec": "node ./bin/www"
 }

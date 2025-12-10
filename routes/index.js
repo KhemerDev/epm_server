@@ -1,18 +1,15 @@
-var express = require('express');
-var router = express.Router();
-const db= require("../mildware/db-conn");
+import express from 'express';
+const router = express.Router();
+import db from '../mildware/db-conn.js';
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', async function(req, res, next) {
   try{
-    db.authenticate().then(()=>{
-      res.json({message: 'Connection has been established successfully.'});
-    }).catch(err=>{
-      res.status(500).json({message: 'Unable to connect to the database:', error: err});
-    });
+    await db.authenticate();
+    res.json({message: 'Connection has been established successfully.'});
   }catch(err){
-    next(err);
+    res.status(500).json({message: 'Unable to connect to the database:', error: err});
   }
 });
 
-module.exports = router;
+export default router;
