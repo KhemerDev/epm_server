@@ -1,6 +1,7 @@
 // import sequelize from '../mildware/db-conn.js';
 import User from "../model/User.js";
 import argon2 from "argon2";
+import jwt from "jsonwebtoken";
 
 export const createUser = async (req, res, next) => {
   try {
@@ -97,7 +98,6 @@ export const loginUser = async (req, res, next) => {
     const user = await User.findOne({ where: { email } });
 
     if (!user) {
-      console.log(`Usuario encontrado: ${user}`);
 
       return res.status(404).json({ message: "Usuário não encontrado." });
     }
@@ -110,9 +110,15 @@ export const loginUser = async (req, res, next) => {
     if (!validPassword) {
       return res.status(401).json({ message: "Senha inválida." });
     }
-    res.status(200).json({ message: "Login bem-sucedido.", user });
+
+
+if (validPassword) {
+  let jwtKey= process.env.JWT_SECRET || 'supersecretkey';
+  let token=jwt.sign({user:user.username,email:user.email,id:user.id},jwtKey,{expiresIn:'1h'});
+  return res.status(200).json({email:user.email,user:user.username,token:token});
+}
+
   } catch (err) {
-    console.log(err);
     next(err);
   }
 };

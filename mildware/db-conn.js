@@ -7,6 +7,7 @@ const DB_NAME = process.env.DB_NAME || 'epm_db';
 const DB_USER = process.env.DB_USER || 'Khemer';
 const DB_PASSWORD = process.env.DB_PASSWORD || 'Khemer0#';
 const DB_HOST = process.env.DB_HOST || 'db'; // 'db' é o fallback para o ambiente Docker
+const JWT_SECRET = process.env.JWT_SECRET || 'secretkey'; // Chave secreta para JWT
 
 const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
     host: DB_HOST,
