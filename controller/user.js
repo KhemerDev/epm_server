@@ -119,6 +119,8 @@ if (validPassword) {
 }
 
   } catch (err) {
+    console.log("error doServidor", err);
+    
     next(err);
   }
 };
