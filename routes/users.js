@@ -6,4 +6,5 @@ router.post('/', userController.createUser);
 router.get('/', userController.listUsers);
 router.delete('/:id', userController.deleteUser);
 router.post('/auth/login', userController.loginUser);
+router.put('/auth/signup', userController.createUser);
 export default router;

@@ -1,0 +1,24 @@
+{
+  "development": {
+    "username": "Khemer",
+    "password": "Khemer0#",
+    "database": "epm_db",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "port": 3307
+  },
+  "test": {
+    "username": "Khemer",
+    "password": "Khemer0#",
+    "database": "epm_db",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "Khemer",
+    "password": "Khemer0#",
+    "database": "epm_db",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}

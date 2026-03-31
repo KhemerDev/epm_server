@@ -5,9 +5,9 @@ import jwt from "jsonwebtoken";
 
 export const createUser = async (req, res, next) => {
   try {
-    const { username, email, password, phone, status } = req.body;
+    const { fullName, email, password, phone, status } = req.body;
     const newUser = await User.create({
-      username,
+      fullName,
       email,
       password,
       phone,
@@ -17,11 +17,15 @@ export const createUser = async (req, res, next) => {
   } catch (err) {
     switch (err.name) {
       case "SequelizeUniqueConstraintError":
+        console.log("EmailJs Exixste");
+        
         res
           .status(400)
           .json({ message: "Username ou email já existe.", error: err.errors });
         break;
       case "SequelizeValidationError":
+        console.log("Erro de validação:", err.errors);
+
         res
           .status(400)
           .json({ message: "Erro de validação.", error: err.errors });
@@ -114,8 +118,8 @@ export const loginUser = async (req, res, next) => {
 
 if (validPassword) {
   let jwtKey= process.env.JWT_SECRET || 'supersecretkey';
-  let token=jwt.sign({user:user.username,email:user.email,id:user.id},jwtKey,{expiresIn:'1h'});
-  return res.status(200).json({email:user.email,user:user.username,token:token});
+  let token=jwt.sign({user:user.fullName,email:user.email,id:user.id},jwtKey,{expiresIn:'1h'});
+  return res.status(200).json({email:user.email,user:user.fullName,token:token});
 }
 
   } catch (err) {
