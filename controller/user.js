@@ -1,5 +1,8 @@
 // import sequelize from '../mildware/db-conn.js';
-import User from "../model/User.js";
+import {User, Profile} from "../model/index.js";
+import UserController from "../model/User.js";
+import UserRole from "../model/UserRole.js";
+import ProfileController from "../model/Profile.js";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 
@@ -97,34 +100,67 @@ export const updatePassword = async (req, res, next) => {
 export const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    // console.log(email);
 
-    const user = await User.findOne({ where: { email } });
+    const user = await UserController.findOne({
+      where: { email },
+      include: [
+        {
+          model: ProfileController,
+          as: 'profile',
+          required: false
+        },
+        {
+          model: UserRole,
+          as: 'userRoles',
+          required: false
+        }
+      ]
+    });
 
     if (!user) {
-
       return res.status(404).json({ message: "Usuário não encontrado." });
     }
 
-    console.log(user.dataValues.password);
-    
-    // const validPassword = false;
     const validPassword = await argon2.verify(user.dataValues.password, password);
 
     if (!validPassword) {
       return res.status(401).json({ message: "Senha inválida." });
     }
 
+    // Extrair roles em array
+    const roles = user.userRoles ? user.userRoles.map(role => role.role) : [];
 
-if (validPassword) {
-  let jwtKey= process.env.JWT_SECRET || 'supersecretkey';
-  let token=jwt.sign({user:user.fullName,email:user.email,id:user.id},jwtKey,{expiresIn:'1h'});
-  return res.status(200).json({email:user.email,user:user.fullName,token:token});
-}
+    // Preparar dados do usuário
+    const userData = {
+      id: user.id,
+      email: user.email,
+      fullName: user.fullName,
+      phone: user.phone,
+      avatar_url: user.profile ? user.profile.avatarUrl : null,
+      roles: roles
+    };
+
+    // Gerar token JWT
+    const jwtKey = process.env.JWT_SECRET || 'supersecretkey';
+    const token = jwt.sign(
+      {
+        user: user.fullName,
+        email: user.email,
+        id: user.id,
+        roles: roles
+      },
+      jwtKey,
+      { expiresIn: '1h' }
+    );
+
+    return res.status(200).json({
+      email: user.email,
+      user: userData,
+      token: token
+    });
 
   } catch (err) {
-    console.log("error doServidor", err);
-    
+    console.log("error do Servidor", err);
     next(err);
   }
 };

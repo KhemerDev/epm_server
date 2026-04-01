@@ -14,7 +14,7 @@ User.init(
     fullName: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      unique: false,
     },
     email: {
       type: DataTypes.STRING,
@@ -32,14 +32,10 @@ User.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    level: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
     status: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      defaultValue: 0,
+      type: DataTypes.ENUM('ativo', 'inativo', 'suspenso'),
+      allowNull: false,
+      defaultValue: 'ativo',
     },
   },
   {
@@ -59,5 +55,12 @@ User.init(
     },
   }
 );
+User.associate = (models) => {
+  User.hasOne(models.Profile, { foreignKey: 'userId', as: 'profile' });
+console.log(models);
+
+  // User.hasMany(models.Visitor, { foreignKey: 'referredBy', as: 'visitors' });
+  // User.hasMany(models.Convert, { foreignKey: 'referredBy', as: 'converts' });
+};
 
 export default User;

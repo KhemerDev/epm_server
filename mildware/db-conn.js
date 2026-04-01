@@ -18,7 +18,7 @@ const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
 async function connectDB() {
     try {
         await sequelize.authenticate();
-        await sequelize.sync({alter: true}); // Sincroniza os modelos com o banco de dados
+        // await sequelize.sync({alter: true}); // Sincroniza os modelos com o banco de dados
         console.log('✅ Conexão Sequelize estabelecida com sucesso.');
     } catch (error) {
         console.error('❌ Não foi possível conectar ao banco de dados:', error);

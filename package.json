@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "node ./bin/www",
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "seed:admin": "node ./seeders/admin-user-seed.js"
   },
   "dependencies": {
     "argon2": "^0.44.0",
