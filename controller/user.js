@@ -16,26 +16,44 @@ export const createUser = async (req, res, next) => {
       phone,
       status,
     });
-    res.status(201).json(newUser);
+    console.log(newUser.dataValues.id);
+  
+    let role = await UserRole.create({
+      userId: newUser.dataValues.id,
+      role: 'membro'
+    });
+    // let role= await setUserRole(newUser.dataValues.id, 'membro');
+    if(role){     
+       console.log("Role do usuário definida como 'membro'.");
+      return res.status(201).json(newUser);
+    } else {
+      console.log("Falha ao definir role do usuário.");
+return res.status(500).json({ message: "Erro ao criar usuário.", error: "Falha ao definir role do usuário." });
+    }
   } catch (err) {
+    
     switch (err.name) {
       case "SequelizeUniqueConstraintError":
-        console.log("EmailJs Exixste");
+        console.log("Email Ja Existe");
         
-        res
+        // res
+        //   .status(400)
+        //   .json({ message: "Username ou email já existe.", error: err.errors });
+        return res
           .status(400)
-          .json({ message: "Username ou email já existe.", error: err.errors });
+          .json({ message: "Email já existe.", error: err.errors });
         break;
       case "SequelizeValidationError":
         console.log("Erro de validação:", err.errors);
 
-        res
+        return res
           .status(400)
           .json({ message: "Erro de validação.", error: err.errors });
         break;
       default:
-        res.status(500).json({ message: "Erro ao criar usuário.", error: err });
-    }
+        // res.status(500).json({ message: "Erro ao criar usuário.", error: err });
+      console.log("Erro do Servidor", err);
+      }
 
     //
     next(err);
@@ -45,11 +63,11 @@ export const createUser = async (req, res, next) => {
 export const listUsers = async (req, res, next) => {
   try {
     const users = await User.findAll();
-    res.status(200).json(users);
+   return res.status(200).json(users);
   } catch (err) {
     console.log(err);
 
-    res.json(err);
+   return res.json(err);
     // next(err);
   }
 };
@@ -59,12 +77,12 @@ export const deleteUser = async (req, res, next) => {
     const userId = req.params.id;
     const deleted = await User.destroy({ where: { id: userId } });
     if (deleted) {
-      res.status(200).json({ message: "Usuário deletado com sucesso." });
+      return res.status(200).json({ message: "Usuário deletado com sucesso." });
     } else {
-      res.status(404).json({ message: "Usuário não encontrado." });
+      return res.status(404).json({ message: "Usuário não encontrado." });
     }
   } catch (err) {
-    res.status(500).json({ message: "Erro ao deletar usuário.", error: err });
+    return res.status(500).json({ message: "Erro ao deletar usuário.", error: err });
     next(err);
   }
 };
@@ -85,12 +103,12 @@ export const updatePassword = async (req, res, next) => {
     );
     if (updated) {
       const updatedUser = await User.findOne({ where: { id: userId } });
-      res.status(200).json(updatedUser);
+     return res.status(200).json(updatedUser);
     } else {
-      res.status(404).json({ message: "Usuário não encontrado." });
+     return res.status(404).json({ message: "Usuário não encontrado." });
     }
   } catch (err) {
-    res
+    return res
       .status(500)
       .json({ message: "Erro ao atualizar senha do usuário.", error: err });
     next(err);
@@ -163,4 +181,9 @@ export const loginUser = async (req, res, next) => {
     console.log("error do Servidor", err);
     next(err);
   }
-};
+
+
+ 
+}
+
+

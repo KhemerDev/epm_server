@@ -37,7 +37,6 @@ services:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-
     healthcheck: # <-- SEÇÃO CORRIGIDA PARA MYSQL
       # CORREÇÃO 1: Comando MySQL para checar o status
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
@@ -45,6 +44,23 @@ services:
       timeout: 5s
       retries: 10 # Aumentado para garantir a inicialização completa
       start_period: 20s # Dê um período inicial para o MySQL começar a responder
+
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - "80:80"
+    environment:  
+      PMA_HOST: db
+      PMA_USER: Khemer
+      PMA_PASSWORD: Khemer0#  
+      PMA_PORT: 3306
+    depends_on:
+      db:
+        condition: service_healthy    
+      
+
 
 # Volumes definidos
 volumes:
