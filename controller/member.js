@@ -7,3 +7,4 @@ export const getMember = controller.getById;
 export const createMember = controller.create;
 export const updateMember = controller.update;
 export const deleteMember = controller.remove;
+export const getMembersCount = controller.getNumber;

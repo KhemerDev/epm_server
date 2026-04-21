@@ -5,6 +5,9 @@ import UserRole from "../model/UserRole.js";
 import ProfileController from "../model/Profile.js";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
+import {createCrudController} from './crudController.js';
+
+const controller = createCrudController(User);
 
 export const createUser = async (req, res, next) => {
   try {
@@ -186,4 +189,6 @@ export const loginUser = async (req, res, next) => {
  
 }
 
+
+export const UserCount= controller.getNumber
 

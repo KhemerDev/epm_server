@@ -25,7 +25,7 @@ export const createCrudController = (Model, keyName = 'id') => ({
     try {
       const newRecord = await Model.create(req.body);
       res.status(201).json(newRecord);
-    } catch (err) {
+    } catch (err) {      
       next(err);
     }
   },
@@ -35,7 +35,7 @@ export const createCrudController = (Model, keyName = 'id') => ({
       const id = req.params[keyName];
       const [updatedCount] = await Model.update(req.body, { where: { [keyName]: id } });
       if (!updatedCount) {
-        return res.status(404).json({ message: `${Model.name} não encontrado.` });
+        return res.status(404).json({ message: `${Model.name} não encontrado.1` });
       }
       const updated = await Model.findByPk(id);
       res.status(200).json(updated);
@@ -56,4 +56,15 @@ export const createCrudController = (Model, keyName = 'id') => ({
       next(err);
     }
   },
+  getNumber: async (req, res, next) => {
+    try {
+      const count = await Model.count();
+      res.status(200).json({ count });
+      console.log(count);
+    } catch (err) {
+      console.log(err);
+      
+      next(err);
+    }
+  }
 });
