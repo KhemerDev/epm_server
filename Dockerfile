@@ -16,4 +16,6 @@ COPY . .
 EXPOSE 3000
 
 # Comando para iniciar o servidor
-CMD [ "npm", "run", "dev" ]
+
+# CMD [ "npm", "run", "dev" ]
+CMD ["docker", "compose", "up" ]
